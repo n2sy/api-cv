@@ -16,6 +16,10 @@ app.use((req, res, next) => {
     next();
 })
 //app.use(feedRoutes);
+
+app.get('/', (req, res) => {
+  res.send('<h1> Heeeeeey </h1>')
+})
 app.use('/cv', cvRoutes);
 app.use('/auth', authRoutes);
 
