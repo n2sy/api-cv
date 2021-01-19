@@ -27,10 +27,7 @@ app.use((error, req, res, next) => {
   res.status(status).json({message : message, data : data }); //data c'est pour la validation
 });
 
-mongoose.connect('mongodb://localhost:27017/projectIsie', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-    .then(result => app.listen(process.env.PORT || 3000))
-    .catch(err => console.log(err));
+app.listen(process.env.PORT || 3000, ()=> {
+  console.log('starteeeeeeeeeeeeeeeeed')
+})
 
