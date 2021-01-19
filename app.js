@@ -27,7 +27,7 @@ app.use((error, req, res, next) => {
   res.status(status).json({message : message, data : data }); //data c'est pour la validation
 });
 
-mongoose.connect('mongodb://localhost:27017/projectIsie', {
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/projectIsie', {
     useNewUrlParser: true,
     useUnifiedTopology: true
   })
