@@ -6,19 +6,19 @@ const router = express.Router();
 
 const isAuth = require('../middleware/is-auth');
 
-//GET /feed/posts
-router.get('/allpersons', cvController.getPersons);
+//GET /cv/allpersons
+router.get('/persons', cvController.getPersons);
 
-router.post('/allpersons', isAuth, cvController.createPerson);
+//POST /cv/persons
+router.post('/persons', cvController.createPerson);
 
-router.get('/allpersons/:personId', cvController.getPerson);
+//GET /cv/persons/3
+router.get('/persons/:personId', cvController.getPerson);
 
-router.put('/allpersons/:personId', isAuth, cvController.updatePerson);
+//PUT /cv/persons/3
+router.put('/persons/:personId', isAuth, cvController.updatePerson);
 
-router.delete('/allpersons/:personId', isAuth, cvController.deletePerson);
-
-//router.get('/allpersons', cvController.getPersonByName);
-
- 
+//DELETE /cv/persons/3
+router.delete('/persons/:personId', isAuth, cvController.deletePerson);
 
 module.exports = router;

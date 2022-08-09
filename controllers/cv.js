@@ -1,18 +1,15 @@
 const Personne = require('../models/person');
+const fs = require("fs");
+const path = require("path");
 
 exports.getPersons = async (req, res, next) => {
-    console.log(req.query);
-    
-    const filter = req.query.filter;
-
-    console.log(filter);
+    //console.log(filter);
     try {
-        const result = await Personne.find({"nom": new RegExp(filter)}) // .find({"nom":/.*jel.*/})
+        const result = await Personne.find()
         res.status(200).json(result)
-    } catch(err) {
+    } catch (err) {
         console.log(err);
     }
-    
 }
 
 exports.createPerson = async (req, res, next) => {
@@ -22,52 +19,60 @@ exports.createPerson = async (req, res, next) => {
     const age = req.body.age;
     const profession = req.body.profession;
     const avatar = req.body.avatar;
-    const status = req.body.status;
 
+    // console.log(process.cwd());
+    // console.log(__dirname);
+
+
+
+    const urlAvatar = req.protocol + "://" + req.get("host");
     const person = new Personne({
-        prenom : prenom,
-        nom : nom,
-        age : age,
-        profession : profession,
-        avatar : avatar,
-        status : status
+        prenom: prenom,
+        nom: nom,
+        age: age,
+        profession: profession,
+        avatar: {
+            name: urlAvatar + "/avatars/" + req.body.avatar,
+            data: fs.readFileSync(path.join(process.cwd(), '/uploads/', req.body.avatar)),
+            contentType: 'image/png'
+        }
     });
 
     try {
         const result = await person.save();
         console.log(result);
         res.status(201).json({ //201 success a ressource was created 
-                message : 'New Person created successfully',
-                prenom : prenom,
-                nom : nom,
-                id : result._id.toString()
-            });
-    } catch(err) {
+            message: 'New Person created successfully',
+            prenom: prenom,
+            nom: nom,
+            id: result._id.toString()
+        });
+    } catch (err) {
         console.log(err)
     }
-   
+
 }
 
 exports.getPerson = (req, res, next) => {
     const pId = req.params.personId;
 
     Personne
-    .findById(pId)
-    .then(p => {
-        if(!p) {
-            const error = new Error('Could not find this person');
-            //error.message = "Verify your person ID"
-            error.statusCode = 404;
-            throw error;
-        }
-        res.status(200).json(p)
-    })
-    .catch(err => {
-        if(!err.statusCode) {
-            err.statusCode = 500;
-        }
-        next(err)
-    })
+        .findById(pId)
+        .then(p => {
+            if (!p) {
+                const error = new Error('Could not find this person');
+                //error.message = "Verify your person ID"
+                error.statusCode = 404;
+                throw error;
+            }
+            res.status(200).json(p)
+        })
+        .catch(err => {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err)
+        })
 }
 
 exports.updatePerson = (req, res, next) => {
@@ -82,48 +87,48 @@ exports.updatePerson = (req, res, next) => {
 
 
     Personne.findById(pId)
-    .then(p => {
-        if(!p) {
-            const error = new Error('Could not find person');
-            error.statusCode = 404;
-            throw error;
-        }
-        p.nom = nom;
-        p.prenom = prenom;
-        p.age = age;
-        p.profession = profession;
-        p.avatar = avatar;
-        p.status = status;
+        .then(p => {
+            if (!p) {
+                const error = new Error('Could not find person');
+                error.statusCode = 404;
+                throw error;
+            }
+            p.nom = nom;
+            p.prenom = prenom;
+            p.age = age;
+            p.profession = profession;
+            p.avatar = avatar;
+            p.status = status;
 
-        return p.save();
-    })
-    .then(result => {
-        res.status(200).json({
-            message : 'Person updated',
-            result : result
-        });
-    })
-    .catch(err => {
-        if(!err.statusCode) {
-            err.statusCode = 500;
-        }
-        next(err)
-    })
+            return p.save();
+        })
+        .then(result => {
+            res.status(200).json({
+                message: 'Person updated',
+                result: result
+            });
+        })
+        .catch(err => {
+            if (!err.statusCode) {
+                err.statusCode = 500;
+            }
+            next(err)
+        })
 }
 
 exports.deletePerson = (req, res, next) => {
     const pId = req.params.personId;
     Personne.findByIdAndRemove(pId)
         .then(p => {
-            if(!p) {
+            if (!p) {
                 const error = new Error('Could not find post');
                 error.statusCode = 404;
                 throw error;
             }
-            res.status(200).json({message : 'Deleted Person !', result : p})
+            res.status(200).json({ message: 'Deleted Person !', result: p })
         })
         .catch(err => {
-            if(!err.statusCode) {
+            if (!err.statusCode) {
                 err.statusCode = 500;
             }
             next(err)
